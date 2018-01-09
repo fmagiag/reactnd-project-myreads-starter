@@ -1,9 +1,32 @@
 import React, {Component} from 'react'
+import * as BooksAPI from './BooksAPI'
 import Shelf from './Shelf'
 
 class ListBooks extends Component{
+
+  state = {
+    book: ''
+  }
+
+  updateShelf = (book, shelf) => BooksAPI.update(book, shelf).then((result) => {
+    book.shelf = shelf
+    this.setState(state => ({
+        book: book
+        // books: books.filter((b) => b.id !== book.id)
+      }))
+  })
+
   render(){
     const {books, onOpenSearch, title} = this.props
+
+    let showingBooks
+
+    if(this.state.book){
+      showingBooks = books.filter((b) => b.id !== this.state.book.id)
+      .concat(this.state.book)
+    }else{
+      showingBooks = books
+    }
     return(
       <div className="list-books">
         <div className="list-books-title">
@@ -13,15 +36,18 @@ class ListBooks extends Component{
           <div>
             <Shelf
               name="Currently Reading"
-              books={books.filter(book => book.shelf === 'currentlyReading')}
+              books={showingBooks.filter(book => book.shelf === 'currentlyReading')}
+              onChangeBook={this.updateShelf}
             />
             <Shelf
               name="Want to Read"
-              books={books.filter(book => book.shelf === 'wantToRead')}
+              books={showingBooks.filter(book => book.shelf === 'wantToRead')}
+              onChangeBook={this.updateShelf}
             />
             <Shelf
               name="Read"
-              books={books.filter(book => book.shelf === 'read')}
+              books={showingBooks.filter(book => book.shelf === 'read')}
+              onChangeBook={this.updateShelf}
             />
           </div>
         </div>
