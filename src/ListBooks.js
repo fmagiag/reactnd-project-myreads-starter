@@ -12,7 +12,6 @@ class ListBooks extends Component{
     book.shelf = shelf
     this.setState(state => ({
         book: book
-        // books: books.filter((b) => b.id !== book.id)
       }))
   })
 

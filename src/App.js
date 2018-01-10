@@ -16,13 +16,21 @@ class BooksApp extends Component {
     showSearchPage: false
   }
 
-  componentDidMount(){
-    BooksAPI.getAll().then((books) => {
-      this.setState({books})
-    })
-  }
+  componentDidMount = this.getBooks
 
-  openSearch = (ative) => this.setState({ showSearchPage: ative })
+  getBooks = BooksAPI.getAll().then((books) => {
+    this.setState({books})
+  })
+
+  openSearch = (ative, refresh, newBook) => {
+    if(refresh){
+      this.setState({
+        showSearchPage: ative,
+        books: this.state.books.concat(newBook)})
+    }else{
+      this.setState({ showSearchPage: ative})
+    }
+  }
 
   render() {
     return (

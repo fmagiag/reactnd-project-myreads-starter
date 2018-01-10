@@ -5,7 +5,10 @@ import Book from './Book'
 class SearchBox extends Component{
 
   state = {
-    books: []
+    books: [],
+    exit: false,
+    newBook:'',
+    shelf:''
   }
 
   clearBooks = () => {
@@ -16,14 +19,25 @@ class SearchBox extends Component{
     this.setState({books})
   })
 
+  updateBook = (book, shelf) => BooksAPI.update(book, shelf).then((result) =>
+  this.setState({ exit: true, newBook: book, shelf }))
+
+
   render() {
     const {onOpenSearch} = this.props
-    const {books} = this.state
+    const {books, exit} = this.state
+
+    let book = this.state.newBook
+
+    if(exit){
+      book.shelf = this.state.shelf
+      onOpenSearch(false,true, book)
+    }
 
     return(
       <div className="search-books">
         <div className="search-books-bar">
-          <a className="close-search" onClick={() => onOpenSearch(false)}>Close</a>
+          <a className="close-search" onClick={() => onOpenSearch(false,false)}>Close</a>
           <div className="search-books-input-wrapper">
             <input
               type="text"
@@ -42,6 +56,7 @@ class SearchBox extends Component{
               <li key={book.id} >
                 <Book
                   book={book}
+                  onMoved={this.updateBook}
                 />
               </li>
             ))}
