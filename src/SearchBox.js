@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {Link} from 'react-router-dom'
 import * as BooksAPI from './BooksAPI'
 import Book from './Book'
 
@@ -15,8 +16,12 @@ class SearchBox extends Component{
     this.setState({ books: []})
   }
 
-  searchBooks = (query) => BooksAPI.search(query).then((books) => {
-    this.setState({books})
+  searchBooks = (query, booksInShelf) => BooksAPI.search(query).then((books) => {
+    this.setState({books: books.filter(b =>
+      !booksInShelf.find(bs =>
+        b.id === bs.id
+      )
+    )})
   })
 
   updateBook = (book, shelf) => BooksAPI.update(book, shelf).then((result) =>
@@ -24,27 +29,29 @@ class SearchBox extends Component{
 
 
   render() {
-    const {onOpenSearch} = this.props
+    const {updateBook, booksInShelf} = this.props
     const {books, exit} = this.state
 
     let book = this.state.newBook
 
     if(exit){
       book.shelf = this.state.shelf
-      onOpenSearch(false,true, book)
+      updateBook(book)
     }
 
     return(
       <div className="search-books">
         <div className="search-books-bar">
-          <a className="close-search" onClick={() => onOpenSearch(false,false)}>Close</a>
+          <Link
+            className="close-search"
+            to="/">Close</Link>
           <div className="search-books-input-wrapper">
             <input
               type="text"
               placeholder="Search by title or author"
               onChange={(event) => {
                 this.clearBooks()
-                event.target.value.length >0 && (this.searchBooks(event.target.value))
+                event.target.value.length >0 && (this.searchBooks(event.target.value, booksInShelf))
               }}
             />
 

@@ -7,14 +7,7 @@ import SearchBox from './SearchBox'
 
 class BooksApp extends Component {
   state = {
-    /**
-     * TODO: Instead of using this state variable to keep track of which page
-     * we're on, use the URL in the browser's address bar. This will ensure that
-     * users can use the browser's back and forward buttons to navigate between
-     * pages, as well as provide a good URL they can bookmark and share.
-     */
-    books: [],
-    showSearchPage: false
+    books: []
   }
 
   componentDidMount = this.getBooks
@@ -23,29 +16,30 @@ class BooksApp extends Component {
     this.setState({books})
   })
 
-  openSearch = (ative, refresh, newBook) => {
-    if(refresh){
-      this.setState({
-        showSearchPage: ative,
-        books: this.state.books.concat(newBook)})
-    }else{
-      this.setState({ showSearchPage: ative})
-    }
+  updateBook(book){
+    this.setState({
+      books: this.state.books.concat(book)
+    })
   }
 
   render() {
     return (
       <div className="app">
-        {this.state.showSearchPage ?
-          (<SearchBox
-            onOpenSearch={this.openSearch}
-          />)
-          :
-          (<ListBooks
+        <Route exact path="/" render={() => (
+          <ListBooks
             books={this.state.books}
-            onOpenSearch={this.openSearch}
             title="MyReads"
-          />)}
+          />
+        )}/>
+        <Route path="/search" render={({ history }) => (
+          <SearchBox
+            booksInShelf={this.state.books}
+            updateBook={(newBook) => {
+                this.updateBook(newBook)
+                history.push('/')
+            }}
+          />
+        )}/>
       </div>
     )
   }
