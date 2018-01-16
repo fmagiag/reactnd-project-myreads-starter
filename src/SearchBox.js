@@ -7,9 +7,6 @@ class SearchBox extends Component{
 
   state = {
     books: [],
-    exit: false,
-    newBook:'',
-    shelf:''
   }
 
   clearBooks = () => {
@@ -17,27 +14,18 @@ class SearchBox extends Component{
   }
 
   searchBooks = (query, booksInShelf) => BooksAPI.search(query).then((books) => {
-    this.setState({books: books.filter(b =>
-      !booksInShelf.find(bs =>
-        b.id === bs.id
-      )
-    )})
+    books.map(b =>
+      booksInShelf.filter((bs) => bs.id === b.id)
+      .map(bs => b.shelf = bs.shelf)
+    )
+    this.setState({books})
+  }).catch((e)=>{
+    this.setState({books:[]})
   })
-
-  updateBook = (book, shelf) => BooksAPI.update(book, shelf).then((result) =>
-  this.setState({ exit: true, newBook: book, shelf }))
-
 
   render() {
     const {updateBook, booksInShelf} = this.props
-    const {books, exit} = this.state
-
-    let book = this.state.newBook
-
-    if(exit){
-      book.shelf = this.state.shelf
-      updateBook(book)
-    }
+    const {books} = this.state
 
     return(
       <div className="search-books">
@@ -54,7 +42,6 @@ class SearchBox extends Component{
                 event.target.value.length >0 && (this.searchBooks(event.target.value, booksInShelf))
               }}
             />
-
           </div>
         </div>
         <div className="search-books-results">
@@ -63,7 +50,7 @@ class SearchBox extends Component{
               <li key={book.id} >
                 <Book
                   book={book}
-                  onMoved={this.updateBook}
+                  onMoved={updateBook}
                 />
               </li>
             ))}

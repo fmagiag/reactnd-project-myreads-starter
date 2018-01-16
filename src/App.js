@@ -10,17 +10,22 @@ class BooksApp extends Component {
     books: []
   }
 
-  componentDidMount = this.getBooks
-
-  getBooks = BooksAPI.getAll().then((books) => {
-    this.setState({books})
-  })
-
-  updateBook(book){
-    this.setState({
-      books: this.state.books.concat(book)
+  componentDidMount() {
+    BooksAPI.getAll().then(books => {
+      this.setState({books})
+    })
+    .catch((e)=>{
+      this.setState({books:[]})
     })
   }
+
+  updateBook = (book, shelf) => BooksAPI.update(book, shelf)
+    .then(() => {
+      book.shelf = shelf
+      this.setState({ books:
+        this.state.books.filter((b) => b.id!==book.id)
+        .concat(book) })
+    })
 
   render() {
     return (
@@ -34,10 +39,7 @@ class BooksApp extends Component {
         <Route path="/search" render={({ history }) => (
           <SearchBox
             booksInShelf={this.state.books}
-            updateBook={(newBook) => {
-                this.updateBook(newBook)
-                history.push('/')
-            }}
+            updateBook={this.updateBook}
           />
         )}/>
       </div>

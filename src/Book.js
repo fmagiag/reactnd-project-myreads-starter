@@ -8,10 +8,13 @@ class Book extends Component{
 
   render(){
     const {book, onMoved} = this.props
+
+    let backgroundImage = book.imageLinks.smallThumbnail
+
     return(
       <div className="book">
         <div className="book-top">
-          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.imageLinks.smallThumbnail})` }}></div>
+          <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: backgroundImage?(`url(${backgroundImage})`):'none' }}></div>
           <div className="book-shelf-changer">
             <select
               value={book.shelf?book.shelf:'none'}
